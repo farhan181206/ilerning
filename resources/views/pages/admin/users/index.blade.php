@@ -78,15 +78,21 @@
                         placeholder="Search for users">
                 </div>
             </div>
+            @foreach ($user as $item)
+                <form id="remove" action="{{route('admin.user.destroy',$item->id)}}" method="post">
+                    @csrf
+                    @method('DELETE')
+                </form>
+            @endforeach
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="p-4">
-                            <form id="select" class="flex items-center">
-                                <input id="checkbox-all-search" onclick="selects()" type="checkbox"
+                            <div class="flex items-center">
+                                <input id="checkbox-all-search" onclick="selects(this)" type="checkbox"
                                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label for="checkbox-all-search" class="sr-only">checkbox</label>
-                            </form>
+                            </div>
                         </th>
                         <th scope="col" class="px-6 py-3">
                             Nama
@@ -103,34 +109,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="w-4 p-4">
-                            <div class="flex items-center">
-                                <input id="checkbox-table-search-1" name="chk" type="checkbox"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
-                            </div>
-                        </td>
-                        <th scope="row"
-                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Hudzaifah
-                        </th>
-                        <td class="px-6 py-4">
-                            hudz@gmail.com
-                        </td>
-                        <td class="px-6 py-4">
-                            Admin
-                        </td>
-                        <td class="flex items-center px-6 py-4 space-x-3">
-                            <a href="{{ route('admin.user.show', 1) }}"
-                                class="font-medium text-green-600 dark:text-green-500 hover:underline">Detail</a>
-                            <a href="{{ route('admin.user.edit', 1) }}"
-                                class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Edit</a>
-                            <a href="#"
-                                class="font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
-                        </td>
-                    </tr>
+                    <form id="select" action="{{route('admin.user.destroy.all')}}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        @foreach ($user as $item)
+                            <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="w-4 p-4">
+                                <div class="flex items-center">
+                                    <input id="checkbox-table-search-1" name="id[{{ $item->id }}]" type="checkbox"
+                                        class="chk w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                                </div>
+                            </td>
+                            <th scope="row"
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{$item->name}}
+                            </th>
+                            <td class="px-6 py-4">
+                                {{$item->email}}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{$item->role}}
+                            </td>
+                            <td class="flex items-center px-6 py-4 space-x-3">
+                                <a href="{{ route('admin.user.show',$item->id) }}"
+                                    class="font-medium text-green-600 dark:text-green-500 hover:underline">Detail</a>
+                                <a href="{{ route('admin.user.edit', $item->id) }}"
+                                    class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Edit</a>
+                                <button onclick="confirm('anda yakin ingin menghapus data')" form="remove"
+                                    class="font-medium text-red-600 dark:text-red-500 hover:underline">Remove</button>
+                            </td>
+                        </tr>
+                            @endforeach
+                    </form>
                 </tbody>
             </table>
         </div>
@@ -141,11 +153,11 @@
 
 @push('add-script')
     <script>
-        function selects() {
-            var chk = document.getElementsByName('chk');
+        function selects(param) {
+            var chk = document.getElementsByClassName('chk');
             for (var i = 0; i < chk.length; i++) {
                 if (chk[i].type=='checkbox') {
-                    if (chk[i].checked==true) {
+                    if (!param.checked) {
                         chk[i].checked=false;
                     } else {
                         chk[i].checked=true

@@ -48,5 +48,6 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     Route::resource('setting', SettingController::class);
     Route::resource('videos', VideoController::class);
     Route::resource('user', UserController::class);
+    Route::delete('/user/destroy/all',[UserController::class,'destroy_all'])->name('user.destroy.all');
 });
 
